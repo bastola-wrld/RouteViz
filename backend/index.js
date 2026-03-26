@@ -84,26 +84,68 @@ app.get('/health', (req, res) => {
 });
 
 app.post('/route', async (req, res, next) => {
-  const { stops } = req.body;
+  const { stops, mode = 'car' } = req.body;
   if (!stops || stops.length < 2) return res.status(400).json({ error: "Min 2 stops required" });
   
+  // Map internal modes to Mapbox profiles
+  const profileMap = {
+    'car': 'mapbox/driving-traffic',
+    'walk': 'mapbox/walking',
+    'bike': 'mapbox/cycling',
+    'bus': 'mapbox/driving-traffic',
+    'train': 'mapbox/driving'
+  };
+  const profile = profileMap[mode] || 'mapbox/driving-traffic';
+
   try {
     const coords = stops.map(s => `${s.lng},${s.lat}`).join(';');
-    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coords}?geometries=geojson&overview=full&access_token=${process.env.MAPBOX_TOKEN}`;
+    const url = `https://api.mapbox.com/directions/v5/${profile}/${coords}?geometries=geojson&overview=full&access_token=${process.env.MAPBOX_TOKEN}`;
     const response = await axios.get(url);
     const data = response.data.routes[0];
 
-    const legs = data.legs.map((leg, i) => ({
-      index: i,
-      startName: stops[i].name,
-      endName: stops[i+1].name,
-      distance: leg.distance,
-      duration: leg.duration,
-      congestion_level: 'low',
-      congestion_score: 0.1
-    }));
+    let totalDuration = data.duration;
+    
+    // Simulate transit overhead
+    if (mode === 'bus') {
+      totalDuration = (totalDuration * 1.3) + (stops.length * 120); // +30% for stops/traffic + 2m per stop
+    } else if (mode === 'train') {
+      totalDuration = (totalDuration * 1.1) + (stops.length * 180); // +10% + 3m per stop
+    }
 
-    res.json({ geometry: data.geometry, totalDuration: data.duration, totalDistance: data.distance, legs });
+    const legs = data.legs.map((leg, i) => {
+      let duration = leg.duration;
+      let transit_info = null;
+
+      if (mode === 'bus') {
+        duration = (duration * 1.3) + 120;
+        transit_info = { type: 'Bus', icon: '🚌', line: 'Route ' + Math.floor(Math.random() * 500) };
+      } else if (mode === 'train') {
+        duration = (duration * 1.1) + 180;
+        transit_info = { type: 'Train', icon: '🚆', line: ['Northern', 'Central', 'Overground', 'Elizabeth'][Math.floor(Math.random() * 4)] };
+      }
+
+      return {
+        index: i,
+        startName: stops[i].name,
+        endName: stops[i+1].name,
+        distance: leg.distance,
+        duration: duration,
+        congestion_level: mode === 'car' ? (leg.duration > leg.duration_typical * 1.5 ? 'heavy' : 'low') : 'low',
+        congestion_score: 0.1,
+        transit_info
+      };
+    });
+
+    // Calculate Journey Impact (Simulated)
+    const distanceKm = data.distance / 1000;
+    const impact = {
+      co2_saved: mode !== 'car' ? (distanceKm * 0.12).toFixed(2) : 0, // kg CO2 saved vs car
+      price: mode === 'bus' ? 1.75 : mode === 'train' ? (2.5 + distanceKm * 0.2).toFixed(2) : mode === 'walk' || mode === 'bike' ? 0 : (5 + distanceKm * 1.5).toFixed(2),
+      calories: mode === 'walk' ? Math.floor(distanceKm * 50) : mode === 'bike' ? Math.floor(distanceKm * 30) : 0,
+      next_departure: (mode === 'bus' || mode === 'train') ? Math.floor(Math.random() * 10) + 1 : null
+    };
+
+    res.json({ geometry: data.geometry, totalDuration, totalDistance: data.distance, legs, mode, impact });
   } catch (error) { next(error); }
 });
 

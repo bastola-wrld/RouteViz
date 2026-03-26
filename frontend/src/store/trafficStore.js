@@ -5,9 +5,9 @@ import { useState, useCallback } from 'react';
 export const useTrafficStore = () => {
   const [state, setState] = useState({
     stops: [
-      { id: 1, name: 'London Bridge', lng: -0.0877, lat: 51.5079 },
-      { id: 2, name: 'Tower of London', lng: -0.0759, lat: 51.5081 },
-      { id: 3, name: 'Greenwich', lng: -0.0022, lat: 51.4769 }
+      { id: 1, name: 'London Bridge', postcode: 'SE1 9RA', lng: -0.0877, lat: 51.5079 },
+      { id: 2, name: 'Tower of London', postcode: 'EC3N 4AB', lng: -0.0759, lat: 51.5081 },
+      { id: 3, name: 'Greenwich', postcode: 'SE10 9NN', lng: -0.0022, lat: 51.4769 }
     ],
     routeData: null,
     loading: false,

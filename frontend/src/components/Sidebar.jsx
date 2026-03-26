@@ -6,14 +6,15 @@ import AIPanel from './AIPanel';
 import StatusBar from './StatusBar';
 import ETATicker from './ETATicker';
 
-export default function Sidebar({ store, socketProps, onGetRoute, onOptimize }) {
+export default function Sidebar({ store, socketProps, onGetRoute, onOptimize, mode, setMode }) {
   const { stops, setStops, loading, error, routeData } = store;
   const [draggedIdx, setDraggedIdx] = useState(null);
   const [withTraffic, setWithTraffic] = useState(false);
+  const [suggestions, setSuggestions] = useState({});
 
   const handleAddStop = () => {
     if (stops.length >= 5) return;
-    const newStop = { id: Date.now(), name: '', lng: '', lat: '' };
+    const newStop = { id: Date.now(), name: '', postcode: '', lng: '', lat: '' };
     setStops([...stops, newStop]);
   };
 
@@ -26,10 +27,30 @@ export default function Sidebar({ store, socketProps, onGetRoute, onOptimize }) 
     setStops(newStops);
   };
 
-  const handleInputChange = (index, field, value) => {
+  const handleInputChange = async (index, field, value) => {
     const newStops = [...stops];
     newStops[index][field] = value;
     setStops(newStops);
+
+    if (field === 'postcode' && value.length > 2) {
+      try {
+        const resp = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(value)}.json?access_token=${import.meta.env.VITE_MAPBOX_TOKEN}&autocomplete=true&limit=5`);
+        const data = await resp.json();
+        setSuggestions(prev => ({ ...prev, [index]: data.features }));
+      } catch (e) { console.error('Geocoding error:', e); }
+    } else if (field === 'postcode') {
+      setSuggestions(prev => ({ ...prev, [index]: [] }));
+    }
+  };
+
+  const selectSuggestion = (index, feature) => {
+    const newStops = [...stops];
+    newStops[index].postcode = feature.place_name;
+    newStops[index].name = feature.text;
+    newStops[index].lng = feature.center[0];
+    newStops[index].lat = feature.center[1];
+    setStops(newStops);
+    setSuggestions(prev => ({ ...prev, [index]: [] }));
   };
 
   const formatTime = (seconds) => {
@@ -78,7 +99,45 @@ export default function Sidebar({ store, socketProps, onGetRoute, onOptimize }) 
         <p>AI Route Planner</p>
       </div>
 
-      <div className="stop-list">
+      <div className="stops-list">
+        <div className="transport-modes">
+          <button 
+            className={`mode-btn ${mode === 'car' ? 'active' : ''}`}
+            onClick={() => setMode('car')}
+            title="Driving"
+          >
+            🚗
+          </button>
+          <button 
+            className={`mode-btn ${mode === 'bus' ? 'active' : ''}`}
+            onClick={() => setMode('bus')}
+            title="Bus"
+          >
+            🚌
+          </button>
+          <button 
+            className={`mode-btn ${mode === 'train' ? 'active' : ''}`}
+            onClick={() => setMode('train')}
+            title="Train"
+          >
+            🚆
+          </button>
+          <button 
+            className={`mode-btn ${mode === 'walk' ? 'active' : ''}`}
+            onClick={() => setMode('walk')}
+            title="Walking"
+          >
+            🚶
+          </button>
+          <button 
+            className={`mode-btn ${mode === 'bike' ? 'active' : ''}`}
+            onClick={() => setMode('bike')}
+            title="Cycling"
+          >
+            🚲
+          </button>
+        </div>
+
         {stops.map((stop, index) => {
           let label = 'Via';
           if (index === 0) label = 'From';
@@ -106,17 +165,21 @@ export default function Sidebar({ store, socketProps, onGetRoute, onOptimize }) 
                   value={stop.name}
                   onChange={(e) => handleInputChange(index, 'name', e.target.value)}
                 />
-                <div className="coords-row">
+                <div className="coords-row search-container">
                   <input 
-                    placeholder="Longitude"
-                    value={stop.lng}
-                    onChange={(e) => handleInputChange(index, 'lng', e.target.value)}
+                    placeholder="Enter destination or postcode"
+                    value={stop.postcode}
+                    onChange={(e) => handleInputChange(index, 'postcode', e.target.value)}
                   />
-                  <input 
-                    placeholder="Latitude"
-                    value={stop.lat}
-                    onChange={(e) => handleInputChange(index, 'lat', e.target.value)}
-                  />
+                  {suggestions[index]?.length > 0 && (
+                    <ul className="suggestions-list">
+                      {suggestions[index].map((feat, i) => (
+                        <li key={i} onClick={() => selectSuggestion(index, feat)}>
+                          {feat.place_name}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             </div>
@@ -160,30 +223,71 @@ export default function Sidebar({ store, socketProps, onGetRoute, onOptimize }) 
             Results
             {routeData.is_ai_adjusted && <span className="ai-badge">AI Adjusted</span>}
           </h3>
-          <div className="metrics-summary">
-            <span><strong>Total Time:</strong> {formatTime(routeData.totalDuration)}</span>
-            <span><strong>Total Dist:</strong> {formatDistance(routeData.totalDistance)}</span>
+          <div className="journey-impact-card">
+            {routeData.impact?.co2_saved > 0 && (
+              <div className="impact-item green">
+                <span className="icon">🍃</span>
+                <span className="val">{routeData.impact.co2_saved}kg</span>
+                <span className="lbl">CO2 Saved</span>
+              </div>
+            )}
+            {routeData.impact?.price > 0 && (
+              <div className="impact-item">
+                <span className="icon">💰</span>
+                <span className="val">£{routeData.impact.price}</span>
+                <span className="lbl">Est. Fare</span>
+              </div>
+            )}
+            {routeData.impact?.calories > 0 && (
+              <div className="impact-item orange">
+                <span className="icon">🔥</span>
+                <span className="val">{routeData.impact.calories}</span>
+                <span className="lbl">Calories</span>
+              </div>
+            )}
+            {routeData.impact?.next_departure && (
+              <div className="impact-item blue pulse">
+                <span className="icon">⏲️</span>
+                <span className="val">{routeData.impact.next_departure}m</span>
+                <span className="lbl">Next Dept</span>
+              </div>
+            )}
           </div>
-          <table className="legs-table">
-            <thead>
-              <tr>
-                <th>Segment</th>
-                <th>Time</th>
-                <th>Dist</th>
-              </tr>
-            </thead>
-            <tbody>
-              {routeData.legs.map((leg, i) => (
-                <tr key={i}>
-                  <td>{leg.startName || 'Start'} → {leg.endName || 'End'}</td>
-                  <td className={leg.is_adjusted ? 'leg-adjusted' : ''}>
-                    {formatTime(leg.duration)}
-                  </td>
-                  <td>{formatDistance(leg.distance)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+
+          <div className="journey-timeline">
+            {routeData.legs.map((leg, i) => (
+              <div key={i} className="timeline-leg">
+                <div className="timeline-marker">
+                  <div className="dot"></div>
+                  <div className="line"></div>
+                </div>
+                <div className="timeline-content">
+                  <div className="leg-header">
+                    <span className="leg-mode">
+                      {leg.transit_info ? (
+                        <>
+                          <span className="mode-icon">{leg.transit_info.icon}</span>
+                          <span className="line-name">{leg.transit_info.line}</span>
+                        </>
+                      ) : (
+                        <span className="mode-icon">
+                          {mode === 'car' ? '🚗' : mode === 'walk' ? '🚶' : '🚲'}
+                        </span>
+                      )}
+                    </span>
+                    <span className="leg-time">{Math.floor(leg.duration / 60)}m</span>
+                  </div>
+                  <div className="leg-details">
+                    <div className="station-name">{leg.startName}</div>
+                    <div className="leg-metrics">{(leg.distance / 1000).toFixed(1)} km</div>
+                  </div>
+                  {i === routeData.legs.length - 1 && (
+                    <div className="station-name destination">{leg.endName}</div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

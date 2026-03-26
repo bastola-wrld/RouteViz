@@ -15,15 +15,39 @@ export default function App() {
   const [isGuest, setIsGuest] = useState(localStorage.getItem('rv_guest') === 'true');
   const [isReady, setIsReady] = useState(false);
   const [path, setPath] = useState(window.location.pathname);
+  const [mode, setMode] = useState('car');
   
   const store = useTrafficStore();
   const socketProps = useTrafficSocket(store.stops, store.routeData?.totalDuration);
+
+  const geocode = async (postcode) => {
+    const token = import.meta.env.VITE_MAPBOX_TOKEN;
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(postcode)}.json?access_token=${token}&limit=1`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.features && data.features.length > 0) {
+      const [lng, lat] = data.features[0].center;
+      return { lng, lat };
+    }
+    throw new Error(`Could not find coordinates for: ${postcode}`);
+  };
 
   const onGetRoute = async (withTraffic) => {
     store.setLoading(true);
     store.setError(null);
     try {
-      const data = await api.post('/route', { stops: store.stops, withTraffic });
+      // Geocode all stops that have a postcode but no coordinates yet
+      // or just geocode all to be sure they match the postcode
+      const geocodedStops = await Promise.all(store.stops.map(async (stop) => {
+        if (stop.postcode) {
+          const coords = await geocode(stop.postcode);
+          return { ...stop, ...coords };
+        }
+        return stop;
+      }));
+      
+      store.setStops(geocodedStops);
+      const data = await api.post('/route', { stops: geocodedStops, withTraffic, mode });
       store.setRouteData(data);
     } catch (err) {
       store.setError(err.message);
@@ -36,10 +60,19 @@ export default function App() {
     store.setLoading(true);
     store.setError(null);
     try {
-      const { optimizedStops } = await api.post('/route/optimize', { stops: store.stops });
+      // Geocode first
+      const geocodedStops = await Promise.all(store.stops.map(async (stop) => {
+        if (stop.postcode) {
+          const coords = await geocode(stop.postcode);
+          return { ...stop, ...coords };
+        }
+        return stop;
+      }));
+
+      const { optimizedStops } = await api.post('/route/optimize', { stops: geocodedStops });
       store.setStops(optimizedStops);
       // Automatically refresh route after optimization
-      const data = await api.post('/route', { stops: optimizedStops, withTraffic });
+      const data = await api.post('/route', { stops: optimizedStops, withTraffic, mode });
       store.setRouteData(data);
     } catch (err) {
       store.setError(err.message);
@@ -114,7 +147,9 @@ export default function App() {
           store={store} 
           socketProps={socketProps} 
           onGetRoute={onGetRoute} 
-          onOptimize={onOptimize} 
+          onOptimize={onOptimize}
+          mode={mode}
+          setMode={setMode}
         />
       </div>
       <div className="map-container">
