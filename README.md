@@ -1,89 +1,72 @@
-# RouteViz 📍 AI-Powered Route Intelligence
+# RouteViz 📍 AI-Powered Multi-Modal Intelligence
 
-RouteViz is a high-performance, full-stack route planning platform that integrates **Computer Vision** (YOLOv8) and **Large Language Models** (Claude/GPT-4o) to provide real-time traffic analysis and intelligent navigation decisions.
+**RouteViz** is a production-grade, full-stack navigation platform that fuses **Citymapper's** intelligent transit metrics with **Google Maps'** world-class search and visualization. Powered by **YOLOv8 Computer Vision** and **Real-time Transit Simulation**, it delivers a high-fidelity routing experience for modern urban mobility.
 
-## 🚀 Live Demo
-[Launch RouteViz](https://routeviz-frontend.vercel.app) *(Coming Soon!)*
+## 🚀 Key Features
 
-## 🧠 Key Features
-- **AI-Augmented Routing**: Mapbox directions adjusted live by local traffic analysis.
-- **Advanced Multi-Modal Transit**: Simulated 🚌 Bus and 🚆 Train journeys with real-time station-access walking legs and live departure boards.
-- **Citymapper-Style Metrics**: Real-time calculation of **CO2 Savings**, **Estimated Fares**, and **Calories Burned** per journey.
-- **Google Maps Interaction**: Integrated search autocomplete, "Locate Me" GPS tracking, and multi-layer map styles (Satellite/Street/Dark).
-- **Traffic Vision**: Detect vehicle density and road hazards using YOLOv8 via the CV microservice.
-- **Real-Time Sync**: WebSocket-powered map pulses and heatmap overlays that update live.
+### 🚇 Citymapper Smarts
+- **Walk-Transit-Walk Simulation:** Automatically splits journeys into granular segments, including walking directions to/from stations for a complete "First/Last Mile" experience.
+- **Live Departure Boards:** Pulsing timetable integration for 🚌 Buses and 🚆 Trains, featuring high-frequency schedule simulation.
+- **Journey Impact Metrics:** Real-time calculation of **CO2 Savings**, **Estimated Fares**, and **Calories Burned** per route.
+- **Vertical Timeline UI:** A professional, step-by-step journey breakdown with mode icons and station markers.
 
-## 🏗️ Architecture & Engineering Decisions
-RouteViz is built with a decoupled microservices approach to ensure scalability and specialized performance.
-- **FastAPI for CV**: We chose Python/FastAPI for the Vision service specifically to leverage its native integration with the PyTorch/YOLO ecosystem, ensuring high-performance asynchronous object detection that doesn't block the Node.js event loop.
-- **SSE vs. Polling**: The AI Decision Engine uses Server-Sent Events (SSE) to stream analysis rather than polling, providing a low-latency "ChatGPT-style" UI while maintaining a lightweight unidirectional connection.
-- **Service Separation**: The LLM layer is strictly decoupled from the core routing engine; this allows us to swap intelligence providers (switching from Claude to a local Llama model) or adjust routing logic independently without systemic risk.
+### 🗺️ Google Maps Versatility
+- **Search Autocomplete:** Real-time destination suggestions using the Mapbox Geocoding API.
+- **Map Style Switcher:** Instant toggling between **Dark Mode**, **High-Res Satellite**, and **Standard Street** layers.
+- **Locate Me (📍):** Instant GPS positioning to anchor your journey from your current physical location.
 
-## 🛠️ Tech Stack
-| Layer | Technology | Purpose |
-| :--- | :--- | :--- |
-| **Frontend** | React, Vite, Mapbox GL JS | Interactive mapping and state management |
-| **Backend** | Node.js, Express, Socket.io | Core logic, Auth, and Real-time updates |
-| **Vision** | Python, FastAPI, YOLOv8 | Traffic image/video detection |
-| **AI** | Anthropic Claude / GPT-4o | Natural language decision engine |
-| **DevOps** | Docker, Vercel, Railway | Containerization and Cloud Hosting |
-
-## 🚦 Getting Started (Local)
-
-### Prerequisites
-- Node.js v18+
-- Python 3.9+
-- [Mapbox Access Token](https://mapbox.com)
-
-### Installation
-1. **Clone the repo**
-   ```bash
-   git clone https://github.com/yourusername/routeviz.git
-   cd routeviz
-   ```
-
-2. **Backend Setup**
-   ```bash
-   cd backend
-   npm install
-   cp .env.example .env # Add your MAPBOX_TOKEN
-   npm start
-   ```
-
-3. **CV Service Setup**
-   ```bash
-   cd ../cv-service
-   pip install -r requirements.txt
-   python main.py
-   ```
-
-4. **Frontend Setup**
-   ```bash
-   cd ../frontend
-   npm install
-   cp .env.example .env # Add your VITE_MAPBOX_TOKEN
-   npm run dev
-   ```
-
-### 🐳 Docker Compose
-Alternatively, run everything at once:
-```bash
-docker-compose up --build
-```
-
-## 🔐 Environment Variables
-| Variable | Required | Description |
-| :--- | :--- | :--- |
-| `MAPBOX_TOKEN` | Yes | Mapbox GL JS public token |
-| `JWT_SECRET` | Yes | Secure string for token signing (min 32 chars) |
-| `ANTHROPIC_API_KEY` | Optional | API key for Claude (Summary engine) |
-| `OPENAI_API_KEY` | Optional | API key for GPT-4o (Backup engine) |
-| `CV_SERVICE_URL` | Optional | URL of the Python microservice |
-
-## 🗺️ Roadmap
-- [ ] **Predictive ML**: Historical traffic pattern analysis for future trip planning.
-- [ ] **Mobile App**: Native iOS/Android version using React Native.
-- [ ] **Social Routing**: Shared "Hazard Markers" across a live user network.
+### 🧠 AI Route Intelligence
+- **Traffic Vision (YOLOv8):** A dedicated Python microservice that analyzes road density and hazards from images/video, feeding live data into the routing engine.
+- **AI-Augmented Routing:** Directions are dynamically adjusted based on real-time traffic pulses and environmental data.
+- **Live Heatmaps:** Visualizes congestion hotspots and system health directly on the map.
 
 ---
-Built by [Babu Ram Ashwin](https://github.com/bastola-wrld)
+
+## 🏗️ Technical Architecture
+
+RouteViz utilizes a decoupled microservices architecture to handle high-performance geospatial and vision tasks:
+
+- **Frontend (React 18 / Vite):** A responsive, state-managed dashboard utilizing **Mapbox GL JS** and **Socket.io** for real-time synchronization.
+- **Backend (Node.js / Express):** The central orchestrator handling authentication, multi-stop optimization, and the custom **Transit Simulation Engine**.
+- **Vision Service (Python / FastAPI):** Specialized service for **YOLOv8** object detection, ensuring heavy CV tasks don't block the main event loop.
+
+---
+
+## 🛠️ Tech Stack
+- **Languages:** JavaScript (ES6+), Python 3.9+
+- **Frameworks:** React, Node.js, FastAPI
+- **Geospatial:** Mapbox GL JS, Geocoding API, Directions API
+- **Real-time:** Socket.io, WebSockets
+- **AI/ML:** YOLOv8 (Ultralytics), PyTorch
+
+---
+
+## 🚦 Getting Started
+
+### 1. Installation
+```bash
+git clone https://github.com/bastola-wrld/RouteViz.git
+cd routeviz
+```
+
+### 2. Environment Setup
+You will need a **Mapbox Access Token**.
+- **Backend:** `cp backend/.env.example backend/.env` and add your `MAPBOX_TOKEN`.
+- **Frontend:** `cp frontend/.env.example frontend/.env` and add your `VITE_MAPBOX_TOKEN`.
+
+### 3. Launching Services
+- **Backend:** `cd backend && npm install && npm start`
+- **CV Service:** `cd cv-service && pip install -r requirements.txt && python main.py`
+- **Frontend:** `cd frontend && npm install && npm run dev`
+
+---
+
+## 🔐 Configuration Highlights
+| Variable | Description |
+| :--- | :--- |
+| `MAPBOX_TOKEN` | Your Mapbox API key for route calculation. |
+| `JWT_SECRET` | Secret key for secure user sessions. |
+| `CV_SERVICE_URL` | Endpoint for the AI Traffic Vision service. |
+
+---
+**Developed with Precision by [Babu Ram Ashwin](https://github.com/bastola-wrld)**
