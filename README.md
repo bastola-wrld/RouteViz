@@ -7,10 +7,11 @@ RouteViz is a high-performance, full-stack route planning platform that integrat
 
 ## 🧠 Key Features
 - **AI-Augmented Routing**: Mapbox directions adjusted live by local traffic analysis.
-- **Traffic Vision**: Upload images or capture live video to detect vehicle density and road hazards using YOLOv8.
-- **Decision Engine**: Natural language route summaries and reroute recommendations via LLM.
+- **Advanced Multi-Modal Transit**: Simulated 🚌 Bus and 🚆 Train journeys with real-time station-access walking legs and live departure boards.
+- **Citymapper-Style Metrics**: Real-time calculation of **CO2 Savings**, **Estimated Fares**, and **Calories Burned** per journey.
+- **Google Maps Interaction**: Integrated search autocomplete, "Locate Me" GPS tracking, and multi-layer map styles (Satellite/Street/Dark).
+- **Traffic Vision**: Detect vehicle density and road hazards using YOLOv8 via the CV microservice.
 - **Real-Time Sync**: WebSocket-powered map pulses and heatmap overlays that update live.
-- **Premium UX**: JWT authentication, skeleton loaders, and a centralized system health dashboard.
 
 ## 🏗️ Architecture & Engineering Decisions
 RouteViz is built with a decoupled microservices approach to ensure scalability and specialized performance.
@@ -45,7 +46,7 @@ RouteViz is built with a decoupled microservices approach to ensure scalability 
    ```bash
    cd backend
    npm install
-   cp .env.example .env # Add your MAPBOX_TOKEN and JWT_SECRET
+   cp .env.example .env # Add your MAPBOX_TOKEN
    npm start
    ```
 
@@ -53,13 +54,14 @@ RouteViz is built with a decoupled microservices approach to ensure scalability 
    ```bash
    cd ../cv-service
    pip install -r requirements.txt
-   uvicorn main:app --port 8000
+   python main.py
    ```
 
 4. **Frontend Setup**
    ```bash
    cd ../frontend
    npm install
+   cp .env.example .env # Add your VITE_MAPBOX_TOKEN
    npm run dev
    ```
 
@@ -84,4 +86,4 @@ docker-compose up --build
 - [ ] **Social Routing**: Shared "Hazard Markers" across a live user network.
 
 ---
-Built with ❤️ by [Your Name]
+Built by [Babu Ram Ashwin](https://github.com/bastola-wrld)
