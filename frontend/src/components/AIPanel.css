@@ -1,0 +1,223 @@
+/* AIPanel styles for RouteViz Phase 5 */
+
+.ai-panel {
+  padding: 16px;
+  border-top: 1px solid #E5E7EB;
+  background: #F9FAFB;
+}
+
+.ai-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.ai-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #111827;
+}
+
+.provider-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.provider-badge.anthropic { background: #FDE68A; color: #92400E; }
+.provider-badge.openai { background: #A7F3D0; color: #065F46; }
+.provider-badge.fallback { background: #F3F4F6; color: #4B5563; }
+
+/* Tabs */
+.ai-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  background: #E5E7EB;
+  padding: 2px;
+  border-radius: 6px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 6px;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4B5563;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.tab-btn.active {
+  background: #FFFFFF;
+  color: #111827;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.tab-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Content Area */
+.ai-content {
+  min-height: 200px;
+}
+
+.typewriter-text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #374151;
+  white-space: pre-wrap;
+}
+
+/* Summary View */
+.summary-headline {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.summary-headline.clear { color: #10B981; }
+.summary-headline.moderate { color: #F59E0B; }
+.summary-headline.heavy { color: #EF4444; }
+.summary-headline.severe { color: #991B1B; }
+
+.fact-list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+}
+
+.fact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #4B5563;
+  margin-bottom: 8px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3B82F6;
+}
+
+/* Recommend View */
+.recommend-card {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-left: 4px solid #3B82F6;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+.recommend-card.high { border-left-color: #EF4444; }
+.recommend-card.medium { border-left-color: #F59E0B; }
+
+.action-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.priority-chip {
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  height: fit-content;
+}
+
+.priority-chip.high { background: #FEE2E2; color: #991B1B; }
+.priority-chip.medium { background: #FEF3C7; color: #92400E; }
+.priority-chip.low { background: #D1FAE5; color: #065F46; }
+
+.action-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.action-reason {
+  font-size: 11px;
+  color: #6B7280;
+  margin-top: 2px;
+}
+
+/* Reroute View */
+.reroute-banner {
+  background: #DBEAFE;
+  color: #1E40AF;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.pill-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.area-pill {
+  background: #FEE2E2;
+  color: #B91C1C;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.apply-btn {
+  width: 100%;
+  margin-top: 16px;
+  padding: 8px;
+  background: #10B981;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Loading/Status */
+.fallback-banner {
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  color: #92400E;
+  padding: 8px;
+  font-size: 11px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stream-dot {
+  width: 4px;
+  height: 4px;
+  background: #3B82F6;
+  border-radius: 50%;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0% { opacity: 0.2; }
+  50% { opacity: 1; }
+  100% { opacity: 0.2; }
+}

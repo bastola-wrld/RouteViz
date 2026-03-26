@@ -1,0 +1,12 @@
+
+> routeviz-backend@1.0.0 start
+> node index.js
+
+-----------------------------------------
+RouteViz Backend Starting...
+Environment: development
+Auth: Ready (JWT)
+AI Engine: Offline
+CV Service: http://localhost:8000
+-----------------------------------------
+Server v1.0.8 listening on port 3001

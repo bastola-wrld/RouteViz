@@ -1,0 +1,54 @@
+/* ETATicker styles */
+.eta-ticker {
+  background: #1F2937;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.eta-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #9CA3AF;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.live-badge {
+  background: #EF4444;
+  color: white;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.eta-countdown {
+  font-size: 24px;
+  font-weight: 800;
+  font-family: monospace;
+}
+
+.eta-countdown.green { color: #10B981; }
+.eta-countdown.amber { color: #F59E0B; }
+.eta-countdown.red { color: #EF4444; }
+
+.eta-progress-bg {
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.eta-progress-bar {
+  height: 100%;
+  background: #3B82F6;
+  transition: width 1s linear;
+}

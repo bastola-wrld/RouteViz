@@ -1,0 +1,49 @@
+/* StatusBar styles */
+.status-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 28px;
+  background: #FFFFFF;
+  border-top: 1px solid #E5E7EB;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 11px;
+  color: #6B7280;
+  z-index: 10;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 16px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #D1D5DB;
+}
+
+.status-dot.connected {
+  background: #10B981;
+  box-shadow: 0 0 4px #10B981;
+  animation: pulse-green 2s infinite;
+}
+
+.status-dot.offline { background: #EF4444; }
+
+@keyframes pulse-green {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.reconnect-text {
+  color: #F59E0B;
+  font-weight: 600;
+}

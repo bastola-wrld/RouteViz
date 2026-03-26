@@ -1,0 +1,10 @@
+# Git ignore file for RouteViz
+node_modules/
+.env
+.env.example
+*.log
+dist/
+.DS_Store
+venv/
+__pycache__/
+*.pt

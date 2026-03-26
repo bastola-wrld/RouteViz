@@ -1,0 +1,69 @@
+.
+├── .gitignore
+├── README.md
+├── backend
+│   ├── .env
+│   ├── .env.example
+│   ├── auth.js
+│   ├── index.js
+│   ├── llm.js
+│   ├── middleware
+│   │   ├── errorHandler.js
+│   │   └── validateEnv.js
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── railway.toml
+│   ├── samples
+│   │   └── index.js
+│   ├── socket.js
+│   └── users.js
+├── cv-service
+│   ├── .env.example
+│   ├── Dockerfile
+│   ├── detector.py
+│   ├── main.py
+│   ├── railway.toml
+│   ├── requirements.txt
+│   └── test_images
+│       └── README.md
+├── docker-compose.yml
+├── frontend
+│   ├── .env
+│   ├── .env.example
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   └── src
+│       ├── App.css
+│       ├── App.jsx
+│       ├── components
+│       │   ├── AIPanel.css
+│       │   ├── AIPanel.jsx
+│       │   ├── CVPanel.css
+│       │   ├── CVPanel.jsx
+│       │   ├── ETATicker.css
+│       │   ├── ETATicker.jsx
+│       │   ├── Sidebar.css
+│       │   ├── Sidebar.jsx
+│       │   ├── SkeletonLoader.css
+│       │   ├── SkeletonLoader.jsx
+│       │   ├── StatusBar.css
+│       │   └── StatusBar.jsx
+│       ├── hooks
+│       │   └── useTrafficSocket.js
+│       ├── main.jsx
+│       ├── pages
+│       │   ├── Auth.css
+│       │   ├── Auth.jsx
+│       │   ├── HealthDashboard.css
+│       │   └── HealthDashboard.jsx
+│       ├── store
+│       │   └── trafficStore.js
+│       └── utils
+│           ├── api.js
+│           └── imageUtils.js
+├── project_scaffold.txt
+└── scripts
+    └── setup.sh
+
+14 directories, 53 files
