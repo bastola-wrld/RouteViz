@@ -256,35 +256,63 @@ export default function Sidebar({ store, socketProps, onGetRoute, onOptimize, mo
 
           <div className="journey-timeline">
             {routeData.legs.map((leg, i) => (
-              <div key={i} className="timeline-leg">
-                <div className="timeline-marker">
-                  <div className="dot"></div>
-                  <div className="line"></div>
-                </div>
-                <div className="timeline-content">
-                  <div className="leg-header">
-                    <span className="leg-mode">
-                      {leg.transit_info ? (
-                        <>
-                          <span className="mode-icon">{leg.transit_info.icon}</span>
-                          <span className="line-name">{leg.transit_info.line}</span>
-                        </>
-                      ) : (
-                        <span className="mode-icon">
-                          {mode === 'car' ? '🚗' : mode === 'walk' ? '🚶' : '🚲'}
+              <div key={i} className="timeline-leg-container">
+                {leg.sub_legs && leg.sub_legs.length > 0 ? (
+                  leg.sub_legs.map((sub, j) => (
+                    <div key={j} className={`timeline-leg sub-leg ${sub.type}`}>
+                      <div className="timeline-marker">
+                        <div className="dot"></div>
+                        <div className="line"></div>
+                      </div>
+                      <div className="timeline-content">
+                        <div className="leg-header">
+                          <span className="leg-mode">
+                            <span className="mode-icon">{sub.icon}</span>
+                            <span className={sub.line ? 'line-name' : ''}>{sub.instruction}</span>
+                          </span>
+                          <span className="leg-time">{Math.floor(sub.duration / 60)}m</span>
+                        </div>
+                        {sub.type !== 'walk' && leg.transit_info?.timetable && (
+                          <div className="timetable-preview">
+                            <span className="lbl">Next:</span>
+                            {leg.transit_info.timetable.slice(0, 3).map((t, k) => (
+                              <span key={k} className="time-tag">{t}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="timeline-leg">
+                    <div className="timeline-marker">
+                      <div className="dot"></div>
+                      <div className="line"></div>
+                    </div>
+                    <div className="timeline-content">
+                      <div className="leg-header">
+                        <span className="leg-mode">
+                          <span className="mode-icon">
+                            {mode === 'car' ? '🚗' : mode === 'walk' ? '🚶' : '🚲'}
+                          </span>
+                          <span>{leg.startName} → {leg.endName}</span>
                         </span>
-                      )}
-                    </span>
-                    <span className="leg-time">{Math.floor(leg.duration / 60)}m</span>
+                        <span className="leg-time">{Math.floor(leg.duration / 60)}m</span>
+                      </div>
+                      <div className="leg-details">
+                        <div className="leg-metrics">{(leg.distance / 1000).toFixed(1)} km</div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="leg-details">
-                    <div className="station-name">{leg.startName}</div>
-                    <div className="leg-metrics">{(leg.distance / 1000).toFixed(1)} km</div>
+                )}
+                {i === routeData.legs.length - 1 && (
+                  <div className="timeline-leg destination-marker">
+                    <div className="timeline-marker"><div className="dot red"></div></div>
+                    <div className="timeline-content">
+                      <div className="station-name destination">{leg.endName}</div>
+                    </div>
                   </div>
-                  {i === routeData.legs.length - 1 && (
-                    <div className="station-name destination">{leg.endName}</div>
-                  )}
-                </div>
+                )}
               </div>
             ))}
           </div>

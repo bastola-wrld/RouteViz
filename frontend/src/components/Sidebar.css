@@ -430,3 +430,60 @@ button:disabled {
 .suggestions-list li:last-child {
   border-bottom: none;
 }
+
+/* Advanced Transit Styles */
+.sub-leg {
+  min-height: 60px !important;
+}
+
+.sub-leg.walk .timeline-marker .dot {
+  background: transparent;
+  border: 2px solid #007aff;
+  box-shadow: none;
+}
+
+.sub-leg.walk .timeline-marker .line {
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 122, 255, 0.3),
+    rgba(0, 122, 255, 0.3) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+.timetable-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.4rem;
+  background: rgba(0, 122, 255, 0.1);
+  border-radius: 6px;
+  border: 1px solid rgba(0, 122, 255, 0.2);
+}
+
+.timetable-preview .lbl {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #007aff;
+}
+
+.time-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.destination-marker {
+  min-height: 40px !important;
+}
+
+.dot.red {
+  background: #ff3b30;
+  box-shadow: 0 0 0 4px rgba(255, 59, 48, 0.2);
+}

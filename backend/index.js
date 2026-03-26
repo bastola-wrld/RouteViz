@@ -115,13 +115,31 @@ app.post('/route', async (req, res, next) => {
     const legs = data.legs.map((leg, i) => {
       let duration = leg.duration;
       let transit_info = null;
+      let sub_legs = [];
 
-      if (mode === 'bus') {
-        duration = (duration * 1.3) + 120;
-        transit_info = { type: 'Bus', icon: '🚌', line: 'Route ' + Math.floor(Math.random() * 500) };
-      } else if (mode === 'train') {
-        duration = (duration * 1.1) + 180;
-        transit_info = { type: 'Train', icon: '🚆', line: ['Northern', 'Central', 'Overground', 'Elizabeth'][Math.floor(Math.random() * 4)] };
+      if (mode === 'bus' || mode === 'train') {
+        const type = mode === 'bus' ? 'Bus' : 'Train';
+        const icon = mode === 'bus' ? '🚌' : '🚆';
+        const line = mode === 'bus' ? 'Route ' + Math.floor(Math.random() * 500) : ['Northern', 'Central', 'Overground', 'Elizabeth'][Math.floor(Math.random() * 4)];
+        
+        transit_info = { 
+          type, 
+          icon, 
+          line,
+          timetable: Array.from({length: 5}, (_, idx) => {
+            const time = new Date();
+            time.setMinutes(time.getMinutes() + (idx * 12) + Math.floor(Math.random() * 5));
+            return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          })
+        };
+
+        // Split into Walk -> Transit -> Walk
+        sub_legs = [
+          { type: 'walk', instruction: `Walk to ${stops[i].name} Station`, duration: 300, icon: '🚶' },
+          { type: mode, instruction: `Take ${line} ${type}`, duration: duration, icon: icon, line: line },
+          { type: 'walk', instruction: `Walk to ${stops[i+1].name}`, duration: 240, icon: '🚶' }
+        ];
+        duration += 540; // Add 9 mins for walking
       }
 
       return {
@@ -132,7 +150,8 @@ app.post('/route', async (req, res, next) => {
         duration: duration,
         congestion_level: mode === 'car' ? (leg.duration > leg.duration_typical * 1.5 ? 'heavy' : 'low') : 'low',
         congestion_score: 0.1,
-        transit_info
+        transit_info,
+        sub_legs
       };
     });
 
